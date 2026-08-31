@@ -1,0 +1,15 @@
+{
+  "schema_version": "doushu-v2-module-registry-2",
+  "sequence": [
+    "01-input-intake",
+    "02-chart-data",
+    "03-analysis",
+    "04-quality-delivery"
+  ],
+  "modules": {
+    "01-input-intake": {"file": "01-input-intake.md", "editable": true},
+    "02-chart-data": {"file": "02-chart-data.md", "editable": true},
+    "03-analysis": {"file": "03-analysis.md", "editable": true},
+    "04-quality-delivery": {"file": "04-quality-delivery.md", "editable": true}
+  }
+}

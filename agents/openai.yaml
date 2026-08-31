@@ -1,0 +1,4 @@
+interface:
+  display_name: "Doushu v2 紫微斗数"
+  short_description: "按健康、事业、感情等方向生成深入易读报告"
+  default_prompt: "使用 $doushu-v2 核对资料并可靠排盘，按我指定的健康、事业、感情或社交方向深入分析，再生成用户易读的专项 HTML 或 PDF 报告。"

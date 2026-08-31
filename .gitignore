@@ -1,0 +1,27 @@
+# Personal case data and generated artifacts
+cases/
+**/*birth*.json
+**/*chart*.json
+**/*flow*.json
+**/reports/
+
+# Local research archive and potentially copyrighted source files
+references/source-archive/
+
+# Case-specific report builders kept only in the local workspace
+scripts/build-career-report-v3.js
+scripts/build-health-report-v2.js
+scripts/build-health-report-v2.py
+scripts/render-career-report-v3-pdf.py
+scripts/build-2003-v2-report.py
+
+# Local/runtime files
+node_modules/
+__pycache__/
+*.pyc
+.env
+*.log
+
+# Machine-specific paths and generated exports
+tmp/
+exports/

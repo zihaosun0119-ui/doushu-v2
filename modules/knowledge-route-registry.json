@@ -1,0 +1,78 @@
+{
+  "schema_version": "doushu-v2-knowledge-route-1",
+  "defaults": {
+    "required": [
+      "references/analysis-core-v2.md",
+      "references/analysis-deep-rules-full-v2.md",
+      "references/report-modes-v2.md",
+      "references/user-rendering-v3.md"
+    ],
+    "optional": [
+      "references/decision-support-v2.md",
+      "references/pattern-evidence-matrix.md",
+      "references/brightness-source-v2.md"
+    ]
+  },
+  "topics": {
+    "完整": {
+      "keywords": ["完整命局", "全面分析", "整体", "全盘"],
+      "required": ["references/decision-support-v2.md"],
+      "optional": ["references/patterns-deep/a-ming-shen.md", "references/patterns-deep/i-time-cycles.md"]
+    },
+    "健康": {
+      "keywords": ["健康", "身体", "疾病", "睡眠", "恢复", "压力", "体检", "症状"],
+      "required": ["references/health-rules-full-v2.md"],
+      "optional": ["references/patterns-deep/d-health-recovery.md", "references/patterns-deep/h-challenging-stars.md"]
+    },
+    "事业": {
+      "keywords": ["事业", "工作", "职位", "职业", "升职", "转行", "创业", "收入", "老板", "团队"],
+      "required": ["references/career-analysis-v2.md"],
+      "optional": ["references/patterns-deep/b-career-finance.md", "references/patterns-deep/e-social-migration-family.md", "references/patterns-deep/g-supportive-stars.md"]
+    },
+    "感情": {
+      "keywords": ["感情", "恋爱", "婚姻", "伴侣", "对象", "分手", "复合", "关系", "桃花"],
+      "required": ["references/relationship-analysis-v2.md"],
+      "optional": ["references/patterns-deep/c-relationship.md", "references/patterns-deep/f-transformations.md"]
+    },
+    "社交": {
+      "keywords": ["社交", "朋友", "同事", "客户", "合作", "人脉", "团队", "师长", "贵人", "小人"],
+      "required": ["references/social-source-registry-v1.md"],
+      "optional": ["references/patterns-deep/e-social-migration-family.md", "references/palace-analysis-v1.md"]
+    },
+    "财务": {
+      "keywords": ["财务", "财富", "钱", "收入", "存款", "现金流", "投资", "理财", "破财"],
+      "required": [],
+      "optional": ["references/patterns-deep/b-career-finance.md", "references/decision-support-v2.md"]
+    },
+    "家庭": {
+      "keywords": ["家庭", "父母", "子女", "家人", "房产", "居住", "亲戚"],
+      "required": [],
+      "optional": ["references/patterns-deep/e-social-migration-family.md", "references/palace-analysis-v1.md"]
+    },
+    "迁移": {
+      "keywords": ["迁移", "出国", "搬家", "旅行", "异地", "外地", "环境变化"],
+      "required": [],
+      "optional": ["references/patterns-deep/e-social-migration-family.md", "references/patterns-deep/i-time-cycles.md"]
+    }
+  },
+  "time_scopes": {
+    "本命": {"keywords": ["本命", "性格", "长期", "一生"], "optional": ["references/patterns-deep/a-ming-shen.md"]},
+    "大限": {"keywords": ["大限", "十年", "阶段", "这十年"], "required": ["references/patterns-deep/i-time-cycles.md"]},
+    "流年": {"keywords": ["流年", "今年", "明年", "2024", "2025", "2026", "2027", "2028", "2029", "2030"], "required": ["references/patterns-deep/i-time-cycles.md"]},
+    "未来三年": {"keywords": ["未来三年", "接下来三年", "近三年"], "required": ["references/patterns-deep/i-time-cycles.md", "references/decision-support-v2.md"]}
+  },
+  "cross_cutting": {
+    "decision_support": {
+      "keywords": ["要不要", "选择", "比较", "风险", "怎么办", "下一步", "是否应该"],
+      "optional": ["references/decision-support-v2.md"]
+    },
+    "case_evidence": {
+      "keywords": ["前事", "案例", "验证", "经历是否吻合", "类似案例"],
+      "optional": ["references/case-evidence-registry.md", "references/anti-repetition-v1.md"]
+    },
+    "knowledge_expansion": {
+      "keywords": ["扩充知识库", "新增规则", "研究资料", "知识库更新"],
+      "optional": ["references/knowledge-expansion-contract-v3.md", "references/source-index.md", "references/source-registry-v1.md"]
+    }
+  }
+}
