@@ -2,6 +2,48 @@
 
 一个面向紫微斗数分析的模块化 Codex Skill。
 
+## 工作流
+
+```mermaid
+flowchart TD
+    A[用户需求与出生资料] --> B{输入是否完整}
+    B -- 否或时辰有争议 --> B1[补充资料或比较候选时辰]
+    B1 --> B
+    B -- 是 --> C[执行契约预检]
+    C --> D[主题与时间范围路由]
+    D --> E[准备命盘 大限 流年数据]
+    E --> F{是否涉及流月}
+    F -- 否 --> G[进入结构分析]
+    F -- 是 --> H[校验流月完整度]
+    H --> I{流月状态}
+    I -- complete 或 fallback --> G
+    I -- partial 或 unavailable --> I1[降级为观察性结论<br/>不输出具体流月断语]
+    I1 --> G
+    G --> J[中州结构层<br/>本命→大限→流年→流月]
+    J --> K[飞星动态层<br/>生年四化→运限四化→宫位串联]
+    K --> L[证据合并<br/>主判断→反证→条件→置信度]
+    L --> M{用户需要专项分析}
+    M -- 是 --> N[事业 关系 健康等专项模块]
+    M -- 否 --> O[通用分析结果]
+    N --> P[现实转换与决策支持]
+    O --> P
+    P --> Q[独立复核<br/>语言 重复 边界 来源]
+    Q --> R{全部门禁通过}
+    R -- 否 --> Q1[记录失败阶段并修正]
+    Q1 --> Q
+    R -- 是 --> S[生成 manifest 与 HTML/PDF]
+    S --> T[核对输出并交付]
+
+    classDef gate fill:#fff4cc,stroke:#b7791f,color:#3d2b00;
+    classDef analysis fill:#e9f5ff,stroke:#2b6cb0,color:#12344d;
+    classDef delivery fill:#eaf7ee,stroke:#2f855a,color:#153b25;
+    class B,C,F,H,I,R gate;
+    class J,K,L,M,N,O,P analysis;
+    class Q,S,T delivery;
+```
+
+这套流程的核心是：先核验资料和数据，再做结构层与动态层的双主轴推演，最后把结论转换成现实可验证的判断。任何一个前置门禁未通过，都不能直接进入最终交付。
+
 ## 功能
 
 - 出生资料核验与时辰边界处理
