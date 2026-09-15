@@ -10,6 +10,7 @@ $healthRules = Get-Content -LiteralPath (Join-Path $skillRoot 'references\health
 $runner = Get-Content -LiteralPath (Join-Path $skillRoot 'scripts\run-report.ps1') -Raw -Encoding UTF8
 $executionContract = Get-Content -LiteralPath (Join-Path $skillRoot 'references\execution-contract-v2.md') -Raw -Encoding UTF8
 $inputGate = Get-Content -LiteralPath (Join-Path $skillRoot 'references\input-intake-gate-v2.md') -Raw -Encoding UTF8
+$reportSelection = Get-Content -LiteralPath (Join-Path $skillRoot 'references\report-selection-gate-v1.md') -Raw -Encoding UTF8
 $gateScript = Get-Content -LiteralPath (Join-Path $skillRoot 'scripts\validate-execution-gates.ps1') -Raw -Encoding UTF8
 $knowledgeContract = Get-Content -LiteralPath (Join-Path $skillRoot 'references\knowledge-expansion-contract-v3.md') -Raw -Encoding UTF8
 $palaceMatrix = Get-Content -LiteralPath (Join-Path $skillRoot 'references\palace-analysis-v1.md') -Raw -Encoding UTF8
@@ -36,13 +37,22 @@ Require-Text $skill 'career-analysis-v2.md' 'skill routing'
 Require-Text $skill 'relationship-analysis-v2.md' 'skill routing'
 Require-Text $skill 'restrained-professional-voice' 'skill delivery'
 Require-Text $skill 'execution-manifest.json' 'skill execution manifest'
+Require-Text $skill 'methodology-and-user-report-v2.md' 'methodology and user report routing'
+Require-Text $skill 'report_mode = complete' 'complete report mode routing'
+Require-Text $skill '03-complete-report' 'complete report module routing'
 Require-Text $skill 'HARD_GATE' 'skill hard gate'
 Require-Text $skill 'input-intake-gate-v2.md' 'mandatory input intake routing'
+Require-Text $skill 'report-selection-gate-v1.md' 'mandatory report selection routing'
 Require-Text $inputGate '暂停并询问' 'mandatory input intake gate'
 Require-Text $inputGate '出生时间不明确' 'birth time clarification gate'
+Require-Text $inputGate '报告选择页' 'report selection input gate'
+Require-Text $reportSelection 'task.reportTypes' 'report selection request field'
+Require-Text $reportSelection '用户确认选择前' 'report selection confirmation gate'
+Require-Text $reportSelection '开始前请先选择要生成的报告' 'report selection prompt template'
 Require-Text $executionContract 'independent_review' 'execution contract review'
 Require-Text $executionContract 'input_intake' 'execution contract input intake stage'
-Require-Text $executionContract '不得生成或交付最终 HTML/PDF' 'execution contract delivery gate'
+Require-Text $executionContract 'preflight' 'execution contract preflight gate'
+Require-Text $executionContract 'final' 'execution contract final gate'
 Require-Text $gateScript 'workflow_status' 'gate workflow status'
 Require-Text $gateScript 'independent_review' 'gate independent review'
 Require-Text $skill 'knowledge-expansion-contract-v3.md' 'knowledge routing'

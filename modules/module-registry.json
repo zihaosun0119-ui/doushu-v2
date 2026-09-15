@@ -4,12 +4,14 @@
     "01-input-intake",
     "02-chart-data",
     "03-analysis",
+    "03-complete-report",
     "04-quality-delivery"
   ],
   "modules": {
     "01-input-intake": {"file": "01-input-intake.md", "editable": true},
     "02-chart-data": {"file": "02-chart-data.md", "editable": true},
     "03-analysis": {"file": "03-analysis.md", "editable": true},
+    "03-complete-report": {"file": "03-complete-report.md", "editable": true},
     "04-quality-delivery": {"file": "04-quality-delivery.md", "editable": true}
   }
 }

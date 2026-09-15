@@ -65,7 +65,7 @@ foreach($g in $groups){
   $content=('# ' + $categoryNames[$g.Name] + '：深度结构卡' + [Environment]::NewLine + [Environment]::NewLine + '本组只收录通过证据矩阵的项目；未通过证据门禁的传统候选不在此处扩写。' + [Environment]::NewLine + [Environment]::NewLine + [string]::Join([Environment]::NewLine + [Environment]::NewLine, @($g.Group | ForEach-Object {$_.Text})))
   Set-Content -LiteralPath (Join-Path $outRoot "$($fileNames[$g.Name]).md") -Value $content -Encoding UTF8
 }
-$index=@('# 深度结构卡索引','','正式调用时只按报告方向和命中条件选择3—8条，不加载全部卡片。','')
+$index=@('# 深度结构卡索引','','正式调用时根据报告方向和命中条件选择相关卡片，上限 8 条，无匹配可为 0 条，不加载全部卡片。','')
 foreach($g in $groups){$index += ('- ' + $categoryNames[$g.Name] + '：' + $g.Count + ' 条，文件 ' + $fileNames[$g.Name] + '.md')}
 $index += ''; $index += '传统候选中未通过精确原文核验的项目已暂缓，不以模板扩写。'
 Set-Content -LiteralPath (Join-Path $outRoot 'index.md') -Value $index -Encoding UTF8

@@ -2,8 +2,7 @@
   "schema_version": "doushu-v2-knowledge-route-1",
   "defaults": {
     "required": [
-      "references/analysis-core-v2.md",
-      "references/analysis-deep-rules-full-v2.md",
+      "references/feixing-fourhua-method-v1.md",
       "references/report-modes-v2.md",
       "references/user-rendering-v3.md"
     ],
@@ -13,10 +12,44 @@
       "references/brightness-source-v2.md"
     ]
   },
+  "method_profiles": {
+    "helu": {
+      "required": [
+        "references/analysis-core-v2.md",
+        "references/analysis-deep-rules-full-v2.md",
+        "references/helu-specificity-and-preflight-v1.md"
+      ],
+      "optional": []
+    },
+    "feixing": {
+      "required": [
+        "references/feixing-fourhua-method-v1.md"
+      ],
+      "optional": [
+        "references/star-interaction-v1.md",
+        "references/monthly-analysis-output-v1.md",
+        "references/patterns-deep/f-transformations.md"
+      ]
+    }
+  },
   "topics": {
+    "飞星断盘": {
+      "keywords": ["飞星", "飞星断盘", "飞星四化", "飞宫", "自化", "互化", "连环忌", "斗君", "五虎遁", "流日", "流时"],
+      "required": ["references/feixing-fourhua-method-v1.md"],
+      "optional": ["references/star-interaction-v1.md", "references/monthly-analysis-output-v1.md", "references/patterns-deep/f-transformations.md"]
+    },
     "完整": {
-      "keywords": ["完整命局", "全面分析", "整体", "全盘"],
-      "required": ["references/decision-support-v2.md"],
+      "keywords": ["完整命局", "全面分析", "整体", "全盘", "完整报告", "完整分析报告", "完整的分析报告", "全盘详细分析", "详细完整报告"],
+      "required": [
+        "references/complete-report-mode-v1.md",
+        "references/decision-support-v2.md",
+        "references/dynamic-cross-domain-v1.md",
+        "references/palace-analysis-v1.md",
+        "references/star-interaction-v1.md",
+        "references/career-analysis-v2.md",
+        "references/relationship-analysis-v2.md",
+        "references/health-rules-full-v2.md"
+      ],
       "optional": ["references/patterns-deep/a-ming-shen.md", "references/patterns-deep/i-time-cycles.md"]
     },
     "健康": {

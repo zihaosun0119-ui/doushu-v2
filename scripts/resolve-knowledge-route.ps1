@@ -2,6 +2,7 @@
   [string[]]$Topic,
   [string]$UserText = '',
   [string]$TimeScope = '',
+  [ValidateSet('helu','feixing')][string]$MethodProfile = 'helu',
   [string]$RegistryPath = (Join-Path (Split-Path -Parent $PSScriptRoot) 'modules\knowledge-route-registry.json'),
   [string]$OutputPath = ''
 )
@@ -29,6 +30,12 @@ function Add-Files($Target, $Files) {
 
 Add-Files $required $registry.defaults.required
 Add-Files $optional $registry.defaults.optional
+if ($null -eq $registry.method_profiles -or $null -eq $registry.method_profiles.$MethodProfile) {
+  $warnings.Add('方法模式不存在：' + $MethodProfile)
+} else {
+  Add-Files $required $registry.method_profiles.$MethodProfile.required
+  Add-Files $optional $registry.method_profiles.$MethodProfile.optional
+}
 
 $explicitTopics = @($Topic | Where-Object { ![string]::IsNullOrWhiteSpace($_) })
 $text = (($UserText + ' ' + ($explicitTopics -join ' ') + ' ' + $TimeScope).Trim())
@@ -87,6 +94,8 @@ if ($missing.Count -gt 0) {
 $result = [ordered]@{
   schema_version = 'doushu-v2-knowledge-route-result-1'
   status = if ($missing.Count -eq 0) { 'passed' } else { 'failed' }
+  method_profile = $MethodProfile
+  report_mode = if ($matchedTopics -contains '完整') { 'complete' } else { 'standard' }
   matched_topics = @($matchedTopics | Sort-Object -Unique)
   matched_time_scopes = @($matchedScopes | Sort-Object -Unique)
   required_files = @($required | Sort-Object -Unique)
