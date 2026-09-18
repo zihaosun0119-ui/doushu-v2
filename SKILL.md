@@ -1,9 +1,9 @@
 ---
-name: doushu-v2
+name: szh-doushu
 description: 用户提供生辰或结构化命盘并要求紫微斗数分析、飞星四化、流年、事业、感情、健康或完整报告时使用。按需路由方法模式、分析层与专项报告层。
 ---
 
-# Doushu v2 总入口
+# SZH-Doushu 总入口
 
 本 skill 采用“总入口 + 四阶段模块 + 参考资料”的结构。模块注册表见 `modules/module-registry.json`，每个模块都必须遵循统一的输入、动作、输出、门禁契约，不能跳过前置阶段。
 
@@ -77,7 +77,7 @@ HARD_GATE: 缺少任一必填资料时，必须暂停并向用户询问；不得
 - `partial`：只有节气月干支；
 - `unavailable`：流月资料不完整。
 
-只有 `complete` 时，才允许输出具体流月命宫、月干四化和叠宫判断。规范目录固定为本文件所在的 `.codex/skills/doushu-v2`；工作区根目录的 `doushu-v2` 仅作为指向规范目录的兼容链接。
+只有 `complete` 时，才允许输出具体流月命宫、月干四化和叠宫判断。规范目录固定为本文件所在的 `.codex/skills/szh-doushu`；旧的 `doushu-v2` 仅作为历史兼容名称。
 
 生成新案例前必须读取 `references/anti-repetition-v1.md`，检索相似案例并登记本案例的独有结构、不可复用表达和专属验证点。
 
@@ -121,7 +121,8 @@ HARD_GATE: 缺少任一必填资料时，必须暂停并向用户询问；不得
 - `references/analysis-deep-rules-full-v2.md`；
 - `references/health-rules-full-v2.md`；
 - `references/report-modes-v2.md`；
-- `references/user-rendering-v3.md`。
+- `references/user-rendering-v3.md`；
+- `references/special-report-prompts-full-v1.md`（优先读取“健康专项提示词覆盖（新版，优先执行）”）。
 
 ### 事业方向
 
@@ -210,7 +211,7 @@ HARD_GATE: 缺少任一必填资料时，必须暂停并向用户询问；不得
 
 默认采用“分析稿与用户报告严格分离”模式：专业依据、盘面术语和完整推理链只保留在独立分析稿，不进入用户报告正文。生成用户报告时必须读取 `references/user-report-rewrite-contract-v1.md`；它规定讨论范围、禁用术语、结构、边界和验收标准。完整性通过现实场景分流实现，不通过增加大量标题实现。
 
-呈现层使用 `references/user-rendering-v3.md`、`references/user-report-rewrite-contract-v1.md` 和 `references/methodology-and-user-report-v2.md`。PDF 首屏必须先展示一句话总判断、3—5 条重点、当前阶段重点领域、行动卡、数据完整度和限制。用户正文只展示现实结论、可能表现、判断条件、时间窗口、风险和行动建议；完成后必须调用 `restrained-professional-voice` 做语言审校。感情专项必须把外貌、家庭层次、相识场合与 6—10 个重点时间点写入正文；用户明确要求“很多/一大批时间点”时扩展到 10 个以上；资料不足时先用 AnySearch 补充传统判断方法并列出来源链接。用户要求逐月时，正文按农历月份排序；每月包含主题、重点领域、现实表现、行动、依据摘要和资料缺口。
+呈现层使用 `references/user-rendering-v3.md`、`references/user-report-rewrite-contract-v1.md` 和 `references/methodology-and-user-report-v2.md`。PDF 首屏必须先展示一句话总判断、3—5 条重点、当前阶段重点领域、行动卡、数据完整度和限制。用户正文只展示现实结论、可能表现、判断条件、时间窗口、风险和行动建议；完成后必须调用 `restrained-professional-voice` 做语言审校。健康专项按新版六节提示词输出，默认 Markdown，药物与体检内容不得越过医生/药师边界。感情专项必须把外貌、家庭层次、相识场合与 6—10 个重点时间点写入正文；用户明确要求“很多/一大批时间点”时扩展到 10 个以上；资料不足时先用 AnySearch 补充传统判断方法并列出来源链接。用户要求逐月时，正文按农历月份排序；每月包含主题、重点领域、现实表现、行动、依据摘要和资料缺口。
 
 用户验证问题不得机械罗列。除非用户明确要求问卷，否则把需要确认的内容写成一段自然的验证引导，最多包含两个核心确认点。
 

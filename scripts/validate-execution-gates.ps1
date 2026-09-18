@@ -92,7 +92,7 @@ if ($null -ne $m) {
     } elseif ($Phase -eq 'final') { Add-Failure 'final 缺少 manifest.report_source' }
     $text = [string](Get-Content -Raw -LiteralPath $ReportFile -Encoding UTF8)
     if ([string]::IsNullOrWhiteSpace($text)) { Add-Failure '报告正文为空' }
-    foreach ($bad in @('$doushu-v2','user-rendering-v3','restrained-professional-voice','execution-manifest')) { if ($text.Contains($bad)) { Add-Failure "报告泄漏内部标识: $bad" } }
+    foreach ($bad in @('$szh-doushu','user-rendering-v3','restrained-professional-voice','execution-manifest')) { if ($text.Contains($bad)) { Add-Failure "报告泄漏内部标识: $bad" } }
     $coverageItems = Get-Entries $m.coverage
     $neededCoverage = @('input-context','action-plan')
     if ($Mode -eq 'health') { $neededCoverage += 'medical-boundary' }

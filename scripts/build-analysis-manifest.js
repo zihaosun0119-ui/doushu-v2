@@ -12,6 +12,15 @@ const HEALTH_MODULES = [
   '健康 - 医学边界',
 ];
 
+const NEW_HEALTH_MODULES = [
+  '一、本人身体出厂设置',
+  '二、父母家族体质溯源',
+  '三、专属用药与避坑指南',
+  '四、关键年份与生理拐点',
+  '五、定制体检与精准防守',
+  '六、免责与行动边界',
+];
+
 function readFile(file, label) {
   if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
     throw new Error(`${label} file missing: ${file || '(empty)'}`);
@@ -46,13 +55,19 @@ function buildManifest(options) {
   jsonFile(options.cases, 'cases');
 
   const report = readFile(options.report, 'report').toString('utf8');
-  if (report.replace(/\s/g, '').length < 4000) {
-    throw new Error('report is too short for a complete life report');
+  const oldHealthComplete = HEALTH_MODULES.every((name) => report.includes(name));
+  const newHealthComplete = NEW_HEALTH_MODULES.every((name) => report.includes(name));
+  const contentLength = report.replace(/\s/g, '').length;
+  if (newHealthComplete) {
+    if (contentLength < 3000) throw new Error('report is too short for the new health report');
+  } else {
+    if (contentLength < 4000) throw new Error('report is too short for a complete life report');
+    if (!oldHealthComplete) {
+      const missingHealth = HEALTH_MODULES.filter((name) => !report.includes(name));
+      throw new Error(`health module incomplete: ${missingHealth.join(', ')}`);
+    }
   }
-  const missingHealth = HEALTH_MODULES.filter((name) => !report.includes(name));
-  if (missingHealth.length) {
-    throw new Error(`health module incomplete: ${missingHealth.join(', ')}`);
-  }
+  const healthModules = newHealthComplete ? NEW_HEALTH_MODULES : HEALTH_MODULES;
 
   const evidence = [...new Set((options.healthEvidence || []).map(String).map((value) => value.trim()).filter(Boolean))];
   if (evidence.length < 3) throw new Error('health evidence requires at least three categories');
@@ -92,7 +107,7 @@ function buildManifest(options) {
     },
     health: {
       evidence_categories: evidence,
-      modules: HEALTH_MODULES,
+      modules: healthModules,
       medical_boundary: 'passed',
     },
     created_at: new Date().toISOString(),
@@ -129,4 +144,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = {buildManifest, HEALTH_MODULES};
+module.exports = {buildManifest, HEALTH_MODULES, NEW_HEALTH_MODULES};
