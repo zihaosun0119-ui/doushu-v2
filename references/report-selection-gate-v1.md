@@ -38,7 +38,7 @@
 
 前端把选择保存为 `task.reportTypes`，把对应的中文方向保存为 `task.directions`（保留 `directions` 以兼容旧请求）。两者必须原样进入 `doushu-v2-analysis-request-1`。分析层和报告层只能生成已选类型；不得因为“完整报告”或默认模板而补写用户未选择的专项内容。
 
-选择 `full` 或用户直接说“完整分析报告、全盘详细分析”时，记录 `report_mode = complete`。完整模式授权覆盖本命全盘及所有与盘面有依据的核心领域；专项深度仍以用户明确提出的重点为准。选择 `yearly` 或 `monthly` 时可将时间范围默认设为“未来三年”，用户仍可在资料页调整。`monthly` 必须继续遵守 `monthlyDataStatus` 门禁：流月数据为 `complete` 或 `fallback` 才能输出具体 12 个月判断，否则只说明数据缺口，不得编造月份结论。
+选择 `full` 或用户直接说“完整分析报告、全盘详细分析”时，记录 `report_mode = complete`。完整模式授权覆盖本命全盘及所有与盘面有依据的核心领域；专项深度仍以用户明确提出的重点为准。选择 `yearly` 或 `monthly` 时可将时间范围默认设为“未来三年”，用户仍可在资料页调整。`monthly` 必须继续遵守 `monthlyDataStatus` 门禁：流月数据为 `complete` 才能输出具体 12 个月判断，否则只说明数据缺口，不得编造月份结论。
 
 ## 交互门禁
 

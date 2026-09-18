@@ -9,6 +9,7 @@ $userRendering = Get-Content -LiteralPath (Join-Path $skillRoot 'references\user
 $healthRules = Get-Content -LiteralPath (Join-Path $skillRoot 'references\health-rules-full-v2.md') -Raw -Encoding UTF8
 $runner = Get-Content -LiteralPath (Join-Path $skillRoot 'scripts\run-report.ps1') -Raw -Encoding UTF8
 $executionContract = Get-Content -LiteralPath (Join-Path $skillRoot 'references\execution-contract-v2.md') -Raw -Encoding UTF8
+$dataMethod = Get-Content -LiteralPath (Join-Path $skillRoot 'references\data-method-contract-v1.md') -Raw -Encoding UTF8
 $inputGate = Get-Content -LiteralPath (Join-Path $skillRoot 'references\input-intake-gate-v2.md') -Raw -Encoding UTF8
 $reportSelection = Get-Content -LiteralPath (Join-Path $skillRoot 'references\report-selection-gate-v1.md') -Raw -Encoding UTF8
 $gateScript = Get-Content -LiteralPath (Join-Path $skillRoot 'scripts\validate-execution-gates.ps1') -Raw -Encoding UTF8
@@ -19,11 +20,18 @@ $socialRegistry = Get-Content -LiteralPath (Join-Path $skillRoot 'references\soc
 $antiRepetition = Get-Content -LiteralPath (Join-Path $skillRoot 'references\anti-repetition-v1.md') -Raw -Encoding UTF8
 $patternLibrary = Get-Content -LiteralPath (Join-Path $skillRoot 'references\pattern-library-v1.md') -Raw -Encoding UTF8
 $knowledgeValidator = Get-Content -LiteralPath (Join-Path $skillRoot 'scripts\validate-knowledge-base.ps1') -Raw -Encoding UTF8
+$analysisPrompt = Get-Content -LiteralPath (Join-Path $skillRoot 'references\analysis-chain-prompt-v2.md') -Raw -Encoding UTF8
+$specialPrompts = Get-Content -LiteralPath (Join-Path $skillRoot 'references\special-report-prompts-full-v1.md') -Raw -Encoding UTF8
 
 $failures = [System.Collections.Generic.List[string]]::new()
 function Require-Text([string]$Content, [string]$Needle, [string]$Label) {
   if ($Content.IndexOf($Needle, [System.StringComparison]::Ordinal) -lt 0) {
     $failures.Add("$Label missing: $Needle")
+  }
+}
+function Forbid-Text([string]$Content, [string]$Needle, [string]$Label) {
+  if ($Content.IndexOf($Needle, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+    $failures.Add("$Label contains forbidden term: $Needle")
   }
 }
 
@@ -32,6 +40,7 @@ Require-Text $skill 'references/analysis-deep-rules-full-v2.md' 'skill routing'
 Require-Text $skill 'references/health-rules-full-v2.md' 'skill routing'
 Require-Text $skill 'references/report-modes-v2.md' 'skill routing'
 Require-Text $skill 'references/decision-support-v2.md' 'skill routing'
+Require-Text $skill 'references/data-method-contract-v1.md' 'fixed data method routing'
 Require-Text $skill 'references/user-rendering-v3.md' 'skill routing'
 Require-Text $skill 'career-analysis-v2.md' 'skill routing'
 Require-Text $skill 'relationship-analysis-v2.md' 'skill routing'
@@ -53,6 +62,10 @@ Require-Text $executionContract 'independent_review' 'execution contract review'
 Require-Text $executionContract 'input_intake' 'execution contract input intake stage'
 Require-Text $executionContract 'preflight' 'execution contract preflight gate'
 Require-Text $executionContract 'final' 'execution contract final gate'
+Require-Text $dataMethod 'rawDates.chineseDate' 'bazi data method'
+Require-Text $dataMethod 'monthlyList(目标年, true)' 'monthly data method'
+Require-Text $dataMethod '斗君算法' 'monthly palace method'
+Require-Text $dataMethod '五虎遁' 'monthly stem method'
 Require-Text $gateScript 'workflow_status' 'gate workflow status'
 Require-Text $gateScript 'independent_review' 'gate independent review'
 Require-Text $skill 'knowledge-expansion-contract-v3.md' 'knowledge routing'
@@ -78,27 +91,38 @@ $relationship = Get-Content -LiteralPath (Join-Path $skillRoot 'references\relat
 Require-Text $career '最佳工作机制' 'career contract'
 Require-Text $career '财富与价值变现' 'career contract'
 Require-Text $career '优势链与风险链' 'career contract'
-Require-Text $relationship '吸引模式' 'relationship contract'
-Require-Text $relationship '冲突与长期运行' 'relationship contract'
+Require-Text $relationship '相处模式' 'relationship contract'
 Require-Text $relationship '关系时间地图' 'relationship contract'
 Require-Text $relationship '关系底层模式' 'relationship contract'
-Require-Text $relationship '资料说明' 'relationship contract'
-Require-Text $relationship '现在怎么做' 'relationship contract'
-Require-Text $relationship '一个低成本行动' 'relationship contract'
-Require-Text $relationship '观察期限' 'relationship contract'
-Require-Text $relationship '推进条件' 'relationship contract'
-Require-Text $relationship 'Must-have' 'relationship contract'
-Require-Text $relationship 'Dealbreaker' 'relationship contract'
-Require-Text $relationship '高关联' 'relationship contract'
-Require-Text $relationship '对方投入与关系发展' 'relationship contract'
-Require-Text $relationship '情绪回流 ≠ 关系重建' 'relationship contract'
-Require-Text $relationship '调整或止损信号' 'relationship contract'
+Require-Text $relationship 'AnySearch' 'relationship method fallback'
+Require-Text $relationship '家庭财富层次' 'relationship partner profile'
+Require-Text $relationship '至少列出 10 个具体时间点' 'relationship meeting window'
+Require-Text $relationship '给用户的进入建议' 'relationship meeting advice'
+Require-Text $relationship '外貌：结合夫妻宫主星' 'relationship partner profile'
+Require-Text $relationship '家庭：结合夫妻宫三方四正' 'relationship partner profile'
+Require-Text $relationship '性格与相处模式' 'relationship partner profile'
+Require-Text $relationship '来源方向' 'relationship meeting context'
+Require-Text $relationship '触发事件' 'relationship meeting context'
+Require-Text $relationship '判断方法与来源' 'relationship methodology'
+Require-Text $analysisPrompt '感情专项固定提示词（新版）' 'relationship prompt override'
+Require-Text $analysisPrompt '公历时间（农历）｜场合｜触发遇见对象的原因｜关系落点' 'relationship prompt date table'
+Require-Text $analysisPrompt '默认只交付 Markdown' 'relationship markdown delivery'
+Require-Text $specialPrompts '感情专项提示词覆盖（新版，优先执行）' 'special relationship prompt override'
+Require-Text $specialPrompts '默认列出 6—10 个重点窗口' 'special relationship date rule'
 Require-Text $runner "Invoke-Stage 'analysis-source-qa'" 'report runner'
 Require-Text $runner "Invoke-Stage 'chart-source-qa'" 'report runner'
 Require-Text $runner 'brightnessMetadata' 'report runner'
 Require-Text $runner '[string]$AnalysisManifest' 'report runner'
 Require-Text $runner "Invoke-Stage 'analysis-manifest-qa'" 'report runner'
 Require-Text $runner 'Get-FileHash' 'report runner'
+
+$skillRootsForTerms = @($skillRoot, (Join-Path (Split-Path -Parent $skillRoot) 'doushu'))
+foreach ($root in $skillRootsForTerms) {
+  Get-ChildItem -LiteralPath $root -Recurse -File -Filter '*.md' | ForEach-Object {
+    $content = Get-Content -LiteralPath $_.FullName -Raw -Encoding UTF8
+    foreach ($term in @(('置' + '信度'), ('置' + '信'), ('con' + 'fidence'))) { Forbid-Text $content $term $_.FullName }
+  }
+}
 
 if ($failures.Count -gt 0) {
   $failures | ForEach-Object { Write-Error $_ }

@@ -12,7 +12,7 @@ preflight 时 workflow_status 使用 running，模块 01–03 为 passed，04-qu
 
 `method_preflight` 是实际命理输出的硬门禁，preflight 和 final 都必须存在且为 `passed`。每次排盘都必须完成飞星基础层，因此无论 `profile`（`helu` 或 `feixing`）为何，都必须通过 `feixing_chart_rules`、`feixing_level_chain`、`concrete_conclusions`、`boundary_check`；`helu` 还必须通过 `helu_coordinate`、`qi_shu_mapping`、`original_stem_transformations`，`feixing` 还必须通过 `feixing_monthly_split`、`feixing_school_boundary`。`report_mode = complete` 另必须通过 `complete_scope`、`feixing_full_chain`、`helu_full_chain`、`trine_review`、`cross_domain`；存在多个选择时还必须通过 `decision_support`，无选择时记录 `not_applicable`。其中 `concrete_conclusions` 均要求每条核心结论有现实对象、变化、触发、时间、验证和行动。缺少任一项，门禁失败。
 
-正文覆盖至少包含 input-context（资料和假设）、action-plan（行动建议）；health 模式追加 medical-boundary（医疗边界），调用时须传入 -Mode health。`coverage` 使用 `{id, excerpt}` 项：每个摘录必须非空并实际出现在报告正文中。不要把固定标题当作覆盖证明，标题允许合并。
+正文覆盖至少包含 input-context（资料和假设）、action-plan（行动建议）；health 模式追加 medical-boundary（医疗边界）。relationship 模式追加 partner-profile（对象画像）、meeting-context（相识路径）、meeting-window（关系年份）和 interaction-pattern（相处模式）。`coverage` 使用 `{id, excerpt}` 项：每个摘录必须非空并实际出现在报告正文中。不要把固定标题当作覆盖证明，标题允许合并。
 
 ## execution-3 示例
 
@@ -45,7 +45,7 @@ preflight 时 workflow_status 使用 running，模块 01–03 为 passed，04-qu
 pwsh -File .\scripts\validate-execution-gates.ps1 -ExecutionManifest .\execution-manifest.json -ReportFile .\report.md -Phase preflight
 ```
 
-生成并检查最终 HTML/PDF、QA 记录后运行：
+生成并检查最终产物、QA 记录后运行：感情专项默认产物为 Markdown；HTML/PDF 仅在用户明确要求时生成。
 
 ```powershell
 pwsh -File .\scripts\validate-execution-gates.ps1 -ExecutionManifest .\execution-manifest.json -ReportFile .\report.md -Phase final
@@ -65,7 +65,7 @@ pwsh -File .\scripts\validate-execution-gates.ps1 -ExecutionManifest .\execution
   "coverage":[{"id":"input-context","excerpt":"报告中实际出现的输入语境摘录"},{"id":"action-plan","excerpt":"报告中实际出现的行动建议摘录"}],
   "report_source":{"path":"report.md","sha256":"..."},
   "qa_record":{"status":"passed","files":[{"path":"qa.md","sha256":"..."}]},
-  "artifacts":[{"path":"report.html","sha256":"..."}], "blocking_issues":[]
+  "artifacts":[{"path":"report.md","sha256":"..."}], "blocking_issues":[]
 }
 ```
 

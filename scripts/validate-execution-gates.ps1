@@ -94,7 +94,9 @@ if ($null -ne $m) {
     if ([string]::IsNullOrWhiteSpace($text)) { Add-Failure '报告正文为空' }
     foreach ($bad in @('$doushu-v2','user-rendering-v3','restrained-professional-voice','execution-manifest')) { if ($text.Contains($bad)) { Add-Failure "报告泄漏内部标识: $bad" } }
     $coverageItems = Get-Entries $m.coverage
-    $neededCoverage = @('input-context','action-plan'); if ($Mode -eq 'health') { $neededCoverage += 'medical-boundary' }
+    $neededCoverage = @('input-context','action-plan')
+    if ($Mode -eq 'health') { $neededCoverage += 'medical-boundary' }
+    if ($Mode -eq 'relationship') { $neededCoverage += @('partner-profile','meeting-context','meeting-window','interaction-pattern') }
     foreach ($needed in $neededCoverage) { $found = $coverageItems | Where-Object { [string]$_.id -eq $needed }; if (!$found) { Add-Failure "缺少正文 coverage: $needed" } }
     foreach ($coverage in $coverageItems) { if ([string]::IsNullOrWhiteSpace([string]$coverage.id) -or [string]::IsNullOrWhiteSpace([string]$coverage.excerpt)) { Add-Failure 'coverage 项缺少 id 或非空摘录'; continue }; if (!$text.Contains([string]$coverage.excerpt)) { Add-Failure "正文缺少 coverage 摘录: $($coverage.id)" } }
     if ($Mode -eq 'health' -and !$text.Contains('医疗')) { Add-Failure '健康报告缺少医疗边界说明' }

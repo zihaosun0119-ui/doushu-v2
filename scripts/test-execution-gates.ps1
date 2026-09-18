@@ -11,7 +11,15 @@ function Clone($value) { return ($value | ConvertTo-Json -Depth 20 | ConvertFrom
 function Assert([bool]$condition, [string]$message) { if (!$condition) { throw "测试失败: $message" } }
 try {
   $input=Record 'input.json'; $module=Record 'module.json'; $route=Record 'knowledge.md'; $methodRecord=Record 'analysis-preflight.json'; $review=Record 'review.md'; $language=Record 'language-review.md'; $qa=Record 'qa.md'; $artifact=Record 'report.html'
-  $report=Join-Path $root 'report.md'; Set-Content -LiteralPath $report -Value 'input excerpt`naction excerpt`nmedical excerpt' -Encoding UTF8
+  $report=Join-Path $root 'report.md'; Set-Content -LiteralPath $report -Value @'
+input excerpt
+action excerpt
+medical excerpt
+partner excerpt
+meeting context excerpt
+meeting window excerpt
+interaction excerpt
+'@ -Encoding UTF8
   $reportSource=@{path='report.md';sha256=(Get-FileHash -LiteralPath $report -Algorithm SHA256).Hash}; $base=@{schema_version='doushu-v2-execution-3';workflow_status='passed';stages=@{data='passed';direction='passed';analysis='passed';specialty='passed';independent_review='passed';rendering='passed';voice_review='passed';dedupe='passed';delivery='passed'};input_intake=@{status='passed';pending_questions=@();required_files=@($input)};modules=@{'01-input-intake'='passed';'02-chart-data'='passed';'03-analysis'='passed';'04-quality-delivery'='passed';required_files=@($module)};method_preflight=@{status='passed';profile='helu';files=@($methodRecord);checks=@{feixing_chart_rules=$true;feixing_level_chain=$true;helu_coordinate=$true;qi_shu_mapping=$true;original_stem_transformations=$true;level_tracking=$true;concrete_conclusions=$true;boundary_check=$true}};knowledge_route=@{status='passed';required_files=@($route);actual_files_read=@($route);warnings=@()};independent_review=@{status='passed';files=@($review);language_proofreading=@{status='passed';files=@($language)}};coverage=@(@{id='input-context';excerpt='input excerpt'},@{id='action-plan';excerpt='action excerpt'});report_source=$reportSource;qa_record=@{status='passed';files=@($qa)};artifacts=@($artifact);blocking_issues=@()}
   $manifest=Write-Case $base 'good'
   $preflight=Clone $base; $preflight.workflow_status='running'; $preflight.modules.'04-quality-delivery'='pending'; $preflight.stages.delivery='pending'; $preflight.qa_record.status='pending'; $preflight.artifacts=@(); $preflight.report_source=$null
@@ -29,12 +37,14 @@ try {
   $complete=Clone $base; $complete | Add-Member -NotePropertyName 'report_mode' -NotePropertyValue 'complete'; $complete.modules | Add-Member -NotePropertyName '03-complete-report' -NotePropertyValue 'passed'; $complete.method_preflight.checks | Add-Member -NotePropertyName 'complete_scope' -NotePropertyValue $true; $complete.method_preflight.checks | Add-Member -NotePropertyName 'feixing_full_chain' -NotePropertyValue $true; $complete.method_preflight.checks | Add-Member -NotePropertyName 'helu_full_chain' -NotePropertyValue $true; $complete.method_preflight.checks | Add-Member -NotePropertyName 'trine_review' -NotePropertyValue $true; $complete.method_preflight.checks | Add-Member -NotePropertyName 'cross_domain' -NotePropertyValue $true; $complete.method_preflight.checks | Add-Member -NotePropertyName 'decision_support' -NotePropertyValue 'not_applicable'; Assert ((Invoke-Gate (Write-Case $complete 'complete-mode') 'preflight' $report 'complete') -eq 0) '完整模式预检'
   $unread=Clone $base; $unread.knowledge_route.actual_files_read=@(); Assert ((Invoke-Gate (Write-Case $unread 'unread-route') 'preflight' $report) -ne 0) '必读知识缺少读取记录'
   $noCoverage=Clone $base; $noCoverage.coverage=@(); Assert ((Invoke-Gate (Write-Case $noCoverage 'no-coverage') 'preflight' $report) -ne 0) '空覆盖记录'
+  $relationship=Clone $base; $relationship.coverage += @(@{id='partner-profile';excerpt='partner excerpt'},@{id='meeting-context';excerpt='meeting context excerpt'},@{id='meeting-window';excerpt='meeting window excerpt'},@{id='interaction-pattern';excerpt='interaction excerpt'}); Assert ((Invoke-Gate (Write-Case $relationship 'relationship') 'preflight' $report 'relationship') -eq 0) '感情报告覆盖'
+  $missingRelationship=Clone $relationship; $missingRelationship.coverage=@($missingRelationship.coverage | Where-Object { $_.id -ne 'meeting-window' }); Assert ((Invoke-Gate (Write-Case $missingRelationship 'missing-relationship') 'preflight' $report 'relationship') -ne 0) '感情报告缺少相识年份'
   $wrongExcerpt=Clone $base; $wrongExcerpt.coverage[0].excerpt='absent excerpt'; Assert ((Invoke-Gate (Write-Case $wrongExcerpt 'wrong-excerpt') 'preflight' $report) -ne 0) '摘录不在正文'
   $questions=Clone $base; $questions.input_intake.pending_questions=@('missing time'); Assert ((Invoke-Gate (Write-Case $questions 'questions') 'preflight' $report) -ne 0) '仍有输入缺项'
   $noQa=Clone $base; $noQa.qa_record.files=@(); Assert ((Invoke-Gate (Write-Case $noQa 'no-qa') 'final' $report) -ne 0) '缺 QA 记录'
   $sourceTamper=Clone $base; $sourceTamper.report_source.sha256=('0' * 64); Assert ((Invoke-Gate (Write-Case $sourceTamper 'source-tamper') 'final' $report) -ne 0) '正文哈希失效'
   Add-Content -LiteralPath (Join-Path $root 'report.html') -Value 'tampered'; Assert ((Invoke-Gate $manifest 'final' $report) -ne 0) '篡改产物'
-  Write-Output 'execution gate tests: PASS (19 independent cases)'
+  Write-Output 'execution gate tests: PASS (21 independent cases)'
 } finally {
   $tempRoot=[System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()); $resolvedRoot=[System.IO.Path]::GetFullPath($root)
   if (!$resolvedRoot.StartsWith($tempRoot, [System.StringComparison]::OrdinalIgnoreCase) -or $resolvedRoot -eq $tempRoot) { throw '拒绝删除不在临时目录内的测试目录' }

@@ -7,10 +7,10 @@ description: 用户提供生辰或结构化命盘并要求紫微斗数分析、�
 
 本 skill 采用“总入口 + 四阶段模块 + 参考资料”的结构。模块注册表见 `modules/module-registry.json`，每个模块都必须遵循统一的输入、动作、输出、门禁契约，不能跳过前置阶段。
 
-本 skill 采用固定执行契约，HTML/PDF 属于最后的交付动作。每次先读取 `references/execution-contract-v2.md`、`references/report-selection-gate-v1.md`、`references/methodology-and-user-report-v2.md` 和 `references/feixing-fourhua-method-v1.md`，再按主轴模式读取 `references/helu-specificity-and-preflight-v1.md`（需要河洛主断时），建立并校验 `execution-manifest.json`：
+本 skill 采用固定执行契约。感情专项默认只交付 Markdown；HTML/PDF 只有用户明确要求时才生成。每次先读取 `references/execution-contract-v2.md`、`references/report-selection-gate-v1.md`、`references/data-method-contract-v1.md`、`references/methodology-and-user-report-v2.md` 和 `references/feixing-fourhua-method-v1.md`，再按主轴模式读取 `references/helu-specificity-and-preflight-v1.md`（需要河洛主断时），建立并校验 `execution-manifest.json`：
 
 ```text
-执行契约预检 → 输入层 → 排盘与飞星基础层 → 河洛/飞星主轴分析 → 完整命局模式（按需） → 独立复核层 → 专项报告层 → 方法与具体性 Preflight → 语言/重复/边界检查 → 交付 Preflight → 生成并检查 HTML/PDF → final 验收 → 交付
+执行契约预检 → 输入层 → 排盘与飞星基础层 → 河洛/飞星主轴分析 → 完整命局模式（按需） → 独立复核层 → 专项报告层 → 方法与具体性 Preflight → 语言/重复/边界检查 → Markdown 交付 Preflight → final 验收 → 交付（用户要求时才追加 HTML/PDF）
 ```
 
 入口只负责流程和路由，不在这里重复事业、感情或健康的详细写作规则。
@@ -71,14 +71,13 @@ HARD_GATE: 缺少任一必填资料时，必须暂停并向用户询问；不得
 
 ### 流月数据完整度
 
-涉及流月时，先运行 `scripts/validate-monthly-flow.js` 并读取输出中的 `monthlyDataStatus`。`jieqiMonths` 只代表节气月干支，不等于完整紫微流月。
+涉及流月时，按 `references/data-method-contract-v1.md` 用本地 `iztro@2.6.0` 的 `monthlyList(目标年, true)` 重新生成，并运行 `scripts/validate-monthly-flow.js` 读取 `monthlyDataStatus`。`jieqiMonths` 只代表节气月干支，不等于完整紫微流月。
 
 - `complete`：月干支、流月命宫、十二宫、月干四化和叠宫完整；
 - `partial`：只有节气月干支；
-- `fallback`：缺失字段已由 `scripts/merge-mingli-fallback.js` 使用本地 iztro 补齐；
-- `unavailable`：没有可靠流月数据。
+- `unavailable`：流月资料不完整。
 
-只有 `complete` 或明确标注 `fallback` 时，才允许输出具体流月命宫、月干四化和叠宫判断。规范目录固定为本文件所在的 `.codex/skills/doushu-v2`；工作区根目录的 `doushu-v2` 仅作为指向规范目录的兼容链接。
+只有 `complete` 时，才允许输出具体流月命宫、月干四化和叠宫判断。规范目录固定为本文件所在的 `.codex/skills/doushu-v2`；工作区根目录的 `doushu-v2` 仅作为指向规范目录的兼容链接。
 
 生成新案例前必须读取 `references/anti-repetition-v1.md`，检索相似案例并登记本案例的独有结构、不可复用表达和专属验证点。
 
@@ -96,7 +95,7 @@ HARD_GATE: 缺少任一必填资料时，必须暂停并向用户询问；不得
 
 用户只说“帮我分析一下”时，先询问主要方向；方向明确后，不要求填写无关领域。
 
-用户明确要求某年某月或逐月报告时，读取 `references/monthly-analysis-output-v1.md` 和 `references/methodology-and-user-report-v2.md`，先确认目标年份和每个月的流月完整度。跨领域动态分析同时读取 `references/dynamic-cross-domain-v1.md`。只有 `complete` 或明确标注 `fallback` 时才输出 12 个月逐月判断；流月字段缺失时先执行本地兜底，仍未通过完整度门禁则只报告缺失项，不生成具体月份断语。
+用户明确要求某年某月或逐月报告时，读取 `references/monthly-analysis-output-v1.md` 和 `references/methodology-and-user-report-v2.md`，先确认目标年份和每个月的流月完整度。跨领域动态分析同时读取 `references/dynamic-cross-domain-v1.md`。只有 `complete` 时才输出逐月判断；流月字段缺失时按固定数据口径重新生成，仍不完整则只报告缺失项，不生成具体月份断语。
 
 ## 4. 按条件选择深入分析方向
 
@@ -157,7 +156,6 @@ HARD_GATE: 缺少任一必填资料时，必须暂停并向用户询问；不得
 - 替代解释；
 - 成立条件；
 - 时间窗口；
-- 置信度；
 - 现实验证点。
 
 每条核心结论还必须明确：方法模式对应的主宫/源宫、气数位或飞星落宫、现实对象和变化、触发条件、至少一个替代解释、可核对现象和具体行动。禁止只写“有机会、遇贵人、压力增加、财运变好、关系有变化”等未落地表达；具体性门禁见所选方法模式的 Preflight 文件。
@@ -208,17 +206,17 @@ HARD_GATE: 缺少任一必填资料时，必须暂停并向用户询问；不得
 1. 先说结论；
 2. 具体对象、现实变化和触发条件；
 3. 时间范围、验证点和替代解释；
-4. 现在怎么做。
+4. 与主题匹配的可执行建议。
 
 默认采用“分析稿与用户报告严格分离”模式：专业依据、盘面术语和完整推理链只保留在独立分析稿，不进入用户报告正文。生成用户报告时必须读取 `references/user-report-rewrite-contract-v1.md`；它规定讨论范围、禁用术语、结构、边界和验收标准。完整性通过现实场景分流实现，不通过增加大量标题实现。
 
-呈现层使用 `references/user-rendering-v3.md`、`references/user-report-rewrite-contract-v1.md` 和 `references/methodology-and-user-report-v2.md`。PDF 首屏必须先展示一句话总判断、3—5 条重点、当前阶段重点领域、行动卡、数据完整度和限制。用户正文只展示现实结论、可能表现、判断条件、时间窗口、风险和行动建议；完成后必须调用 `restrained-professional-voice` 做语言审校。用户要求逐月时，正文加入按自然月份排序的月度总览；每月包含主题、重点领域、现实表现、行动、依据摘要、置信度和不确定性。
+呈现层使用 `references/user-rendering-v3.md`、`references/user-report-rewrite-contract-v1.md` 和 `references/methodology-and-user-report-v2.md`。PDF 首屏必须先展示一句话总判断、3—5 条重点、当前阶段重点领域、行动卡、数据完整度和限制。用户正文只展示现实结论、可能表现、判断条件、时间窗口、风险和行动建议；完成后必须调用 `restrained-professional-voice` 做语言审校。感情专项必须把外貌、家庭层次、相识场合与 6—10 个重点时间点写入正文；用户明确要求“很多/一大批时间点”时扩展到 10 个以上；资料不足时先用 AnySearch 补充传统判断方法并列出来源链接。用户要求逐月时，正文按农历月份排序；每月包含主题、重点领域、现实表现、行动、依据摘要和资料缺口。
 
 用户验证问题不得机械罗列。除非用户明确要求问卷，否则把需要确认的内容写成一段自然的验证引导，最多包含两个核心确认点。
 
 ## 8. 交付与检查
 
-完成所选方法模式的 Preflight、`restrained-professional-voice` 审校、重复检查和边界检查后，按执行契约运行 `scripts/validate-execution-gates.ps1 -Phase preflight`；通过后生成并检查 HTML/PDF，保存产物哈希和 QA 记录，再运行 `-Phase final`。最终验收通过后才交付。检查：
+完成所选方法模式的 Preflight、`restrained-professional-voice` 审校、重复检查和边界检查后，按执行契约运行 `scripts/validate-execution-gates.ps1 -Phase preflight`；感情专项通过后直接生成和检查 Markdown，保存产物哈希和 QA 记录，再运行 `-Phase final`。只有用户明确要求网页或 PDF 时，才追加对应产物。最终验收通过后才交付。检查：
 
 - 关键数据是否一致；
 - 同一核心判断是否重复完整出现；
