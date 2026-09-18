@@ -1,81 +1,120 @@
-# szh-doushu 规则内核
+# SZH-Doushu
 
-`doushu-v2` 的产品名是一个完整的软件；本目录是它的规则、知识与执行契约内核，不是独立前端。唯一用户前端位于同级工作区的 `doushu-v2-web/`，所有交互、排盘、报告生成和导出都从该入口完成。
+> 面向 Codex 的紫微斗数分析技能包：先核验数据，再按方法模式完成命盘、运限与专项报告。
 
-本目录继续作为规则 Source of Truth，供软件在构建时同步版本清单；不要在这里新增第二套网页入口。
+[![Validate](https://github.com/zihaosun0119-ui/doushu-v2/actions/workflows/validate.yml/badge.svg)](https://github.com/zihaosun0119-ui/doushu-v2/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+## 项目定位
+
+本仓库是可独立安装的 Codex skill，不是网页应用。根目录的 `SKILL.md` 是唯一入口；命盘计算、报告渲染和导出由外部前端或调用方负责。
+
+项目的核心原则是：
+
+1. 先核验出生资料、历法、时辰和数据完整度。
+2. 再按飞星或河洛主轴建立可追溯的分析链。
+3. 最后把结论转换为现实对象、触发条件、时间窗口、验证点和行动建议。
+4. 任一前置门禁失败，都不输出伪精确的具体断语。
+
+## 快速开始
+
+### 安装到 Codex 全局技能目录
+
+Windows PowerShell：
+
+```powershell
+$destination = "$HOME\.codex\skills\szh-doushu"
+New-Item -ItemType Directory -Force -Path $destination | Out-Null
+Copy-Item -Recurse -Force .\* $destination
+```
+
+macOS/Linux：
+
+```bash
+mkdir -p ~/.codex/skills/szh-doushu
+cp -R ./* ~/.codex/skills/szh-doushu/
+```
+
+安装后使用 `$szh-doushu`，或直接提出紫微斗数排盘、流年、事业、感情、健康和完整报告需求。
+
+### 最小调用示例
+
+```text
+使用 $szh-doushu。
+出生：2003-01-19 09:45，男，江苏常州，真太阳时。
+报告：感情专项，输出 Markdown。
+```
+
+首次调用会先要求选择报告方向；选择确认前不会开始排盘或分析。
 
 ## 工作流
 
 ```mermaid
-flowchart TD
-    A[用户需求与出生资料] --> B{输入是否完整}
-    B -- 否或时辰有争议 --> B1[补充资料或比较候选时辰]
-    B1 --> B
-    B -- 是 --> C[执行契约预检]
-    C --> D[主题与时间范围路由]
-    D --> E[准备命盘 大限 流年数据]
-    E --> E1[飞星基础断盘<br/>生年四化→自化/互化→限年链]
-    E1 --> F{是否涉及流月}
-    F -- 否 --> G[进入结构分析]
-    F -- 是 --> H[校验流月完整度]
-    H --> I{流月状态}
-    I -- complete 或 fallback --> G
-    I -- partial 或 unavailable --> I1[降级为观察性结论<br/>不输出具体流月断语]
-    I1 --> G
-    G --> J{锁定主断模式}
-    J -- 河洛 --> J1[河洛坐标与方法门禁<br/>1—12→一六→气数位→本对宫]
-    J -- 飞星/四化 --> J2[提升飞星基础链为主断<br/>电源→大限→流年→流月]
-    J1 --> K[层级四化跟踪]
-    J2 --> K
-    K --> L[具体性证据合并<br/>对象→变化→触发→时间→验证→行动]
-    L --> L1{完整命局模式?}
-    L1 -- 是 --> L2[飞星独立链 + 河洛独立链<br/>关键三方四正 + 全盘专题]
-    L1 -- 否 --> M{用户需要专项分析}
-    L2 --> M
-    M -- 是 --> N[事业 关系 健康等专项模块]
-    M -- 否 --> O[通用分析结果]
-    N --> P[现实转换与决策支持]
-    O --> P
-    P --> Q[独立复核<br/>语言 重复 边界 来源]
-    Q --> R{preflight 通过}
-    R -- 否 --> Q1[记录失败阶段并修正]
-    Q1 --> Q
-    R -- 是 --> S[生成 HTML/PDF 并保存 QA 与哈希]
-    S --> T[final 验收通过后交付]
-
-    classDef gate fill:#fff4cc,stroke:#b7791f,color:#3d2b00;
-    classDef analysis fill:#e9f5ff,stroke:#2b6cb0,color:#12344d;
-    classDef delivery fill:#eaf7ee,stroke:#2f855a,color:#153b25;
-    class B,C,F,H,I,R gate;
-    class E1,J,J1,J2,K,L,M,N,O,P analysis;
-    class Q,S,T delivery;
+flowchart LR
+    A[资料与报告选择] --> B[输入门禁]
+    B --> C[命盘与运限数据]
+    C --> D{主轴}
+    D -->|河洛| E[河洛坐标链]
+    D -->|飞星/四化| F[飞星因果链]
+    E --> G[专项分析]
+    F --> G
+    G --> H[现实转换与复核]
+    H --> I[Markdown 交付门禁]
 ```
 
-这套流程的核心是：先核验资料和数据，再完成每次必做的飞星基础断盘，之后决定河洛或飞星谁负责主断，最后把结论转换成带对象、触发条件、时间范围、验证点和行动建议的现实判断。不同主轴分开推演，三方四正只在需要时作为次级参考；任何一个前置门禁未通过，都不能直接进入最终交付。
+涉及流月时，固定使用本地 `iztro@2.6.0` 的 `monthlyList(目标年, true)`，并运行流月完整度校验；节气月干支不能代替完整紫微流月。
 
-## 功能
+## 目录结构
 
-- 出生资料核验与时辰边界处理
-- 本命、大限、流年、流月的数据分层
-- 事业、关系、健康等专项分析路由
-- 证据链、反证、现实验证和决策支持
-- 流月数据完整度检查与本地排盘兜底
-- 报告质量、重复、来源和执行门禁校验
+```text
+.
+├── SKILL.md                         # 技能入口与总路由
+├── agents/openai.yaml               # Codex 展示信息与默认调用提示
+├── modules/                         # 输入、数据、分析、交付模块
+├── references/                      # 方法、证据、专项规则与输出契约
+│   ├── patterns-deep/               # 按需读取的深层结构卡
+│   ├── source-digests/              # 来源摘要与证据索引
+│   └── source-archive/              # 本地研究归档，不随公开仓库分发
+├── scripts/                         # 路由、排盘数据、校验与测试脚本
+├── docs/                            # 面向维护者的架构、流程与版本文档
+├── tests/                           # 测试说明与可复现实例索引
+├── .github/                         # CI、Issue 模板与 PR 模板
+├── CONTRIBUTING.md                  # 贡献与变更约定
+├── SECURITY.md                      # 安全与隐私报告流程
+├── CHANGELOG.md                     # 版本变更记录
+└── LICENSE                          # MIT 许可证
+```
 
-## 目录
+## 常用命令
 
-- `SKILL.md`：技能入口与工作流
-- `modules/`：输入、数据、分析和交付模块
-- `references/`：分析规则、证据规范和输出规范
-- `scripts/`：校验、路由、报告和兜底工具
-- `agents/openai.yaml`：Codex agent 配置
+在仓库根目录执行：
+
+```powershell
+node --test scripts/test-analysis-manifest.js
+pwsh -NoProfile -File scripts/test-skill-contract.ps1
+pwsh -NoProfile -File scripts/test-modular-contract.ps1
+pwsh -NoProfile -File scripts/test-knowledge-routing.ps1
+pwsh -NoProfile -File scripts/test-execution-gates.ps1
+```
+
+`git diff --check` 用于提交前检查空白和冲突标记；完整 CI 配置见 `.github/workflows/validate.yml`。
+
+## 维护约定
+
+- `SKILL.md` 只保留入口、路由和不可跳过的门禁；专项规则放在 `references/`。
+- `modules/` 只描述阶段职责与输入输出，不重复整套命理知识。
+- `scripts/` 负责可重复执行的生成、校验和测试，不把个人命盘写入公开仓库。
+- 个人案例、出生资料、报告和研究原件默认被 `.gitignore` 排除。
+- 修改目录或文件名时，同时更新路由 JSON、脚本测试、文档链接和全局安装副本。
+
+## 设计参考
+
+本项目的技能包形态参考了 [OpenAI Skills](https://github.com/openai/skills) 与 [Anthropic Skills](https://github.com/anthropics/skills) 的公开组织方式：根目录保留可识别的 `SKILL.md`，辅助资源按用途分目录，并用 UI 元数据和自动化校验保证可发现性与可维护性。
 
 ## 使用边界
 
-本 Skill 输出的是传统命理框架下的条件化分析，不保证职业、财务、关系或健康结果；健康、法律和财务问题不能以命盘替代专业意见。
+本 Skill 提供传统命理框架下的结构化分析，不替代医学、法律、财务或其他专业意见。健康内容用于预防和就医准备，不用于诊断；报告不承诺职业、财务或关系结果。
 
-本公开仓库不包含个人案例、出生资料和研究资料原件。研究归档和本地案例应在私有环境中使用。
+## 许可证
 
-## 许可
-
-除 `references/` 中另有来源或许可证说明的内容外，本仓库代码和原创文档采用 MIT License，见 `LICENSE`。
+除 `references/` 中另有来源或许可证说明的内容外，本仓库原创代码和文档采用 MIT License，详见 [LICENSE](LICENSE)。

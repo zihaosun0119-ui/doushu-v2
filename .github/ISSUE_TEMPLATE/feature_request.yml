@@ -1,0 +1,26 @@
+name: Feature request
+description: 提议可复用的流程、规则、文档或校验改进
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决的问题
+      description: 当前流程哪里不清晰、不稳定或不可复用？
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+      description: 描述预期行为、影响范围和兼容性考虑。
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: 验证方式
+      description: 如何用测试或可观察结果证明改动有效？
+    validations:
+      required: true

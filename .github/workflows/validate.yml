@@ -1,0 +1,38 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Skill contract
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check whitespace
+        shell: pwsh
+        run: git diff --check
+
+      - name: Run Node tests
+        run: node --test scripts/test-analysis-manifest.js
+
+      - name: Run PowerShell contracts
+        shell: pwsh
+        run: |
+          ./scripts/test-skill-contract.ps1
+          ./scripts/test-modular-contract.ps1
+          ./scripts/test-knowledge-routing.ps1
+          ./scripts/test-execution-gates.ps1

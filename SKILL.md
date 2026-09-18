@@ -232,6 +232,8 @@ HARD_GATE: 缺少任一必填资料时，必须暂停并向用户询问；不得
 
 保留现有 `enrich-brightness.js`、`enrich-flow.js`、`case-library.js`、`build-analysis-manifest.js` 和 `run-report.ps1`，它们属于数据与交付层，不需要在 v2 重写。
 
+仓库目录、依赖方向、发布和全局同步说明见 `docs/architecture.md` 与 `docs/maintenance.md`；根目录 `SKILL.md`、`agents/openai.yaml`、`modules/`、`references/` 和 `scripts/` 必须保持可直接安装的兼容结构。
+
 ## 9. 中止条件
 
 - 出生日期、时间或性别缺失且无法从上下文获得；

@@ -1,0 +1,29 @@
+name: Bug report
+description: 报告可复现的流程、脚本或输出问题
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请不要提交真实姓名、完整出生资料、健康记录或私有报告。
+  - type: textarea
+    id: summary
+    attributes:
+      label: 问题摘要
+      description: 简洁说明实际结果与预期结果。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 使用脱敏数据和最小步骤说明。
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 版本或提交
+    validations:
+      required: true
